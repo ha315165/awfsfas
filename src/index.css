@@ -1,0 +1,375 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+@import "leaflet/dist/leaflet.css";
+
+/* System font and accessibility styles */
+:root {
+  font-family: "Urbanist", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color-scheme: light;
+  /* DustWatch Official Color Identity */
+  --color-forest: #244C3B;
+  --color-sunset: #E8874A;
+  --color-warm-sand: #F7F1E8;
+  --color-terracotta: #713F2B;
+  --color-warm-white: #FFFDF8;
+  --color-soft-sage: #E8F0E7;
+  --color-pale-apricot: #F5DDC9;
+  --color-light-orange: #FBEBDD;
+  --color-pale-green: #C5D9C5;
+  --color-muted-olive: #A8B99A;
+  --color-soft-sand: #E8D2B4;
+  --color-sand-border: #E7DDD0;
+  --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Semantic Theme Tokens */
+  --bg-app: #F7F1E8;
+  --bg-surface: #FFFDF8;
+  --bg-surface-secondary: #F7F1E8;
+  --bg-surface-elevated: #FFFFFF;
+  --text-primary: #2D221C;
+  --text-secondary: #713F2B;
+  --text-muted: #8C6D58;
+  --border-subtle: #E7DDD0;
+  --border-strong: #DFCBB3;
+}
+
+.dark {
+  color-scheme: dark;
+  /* DustWatch Dark Mode Palette */
+  --color-forest: #1E3D30;
+  --color-sunset: #E8874A;
+  --color-warm-sand: #101820;
+  --color-terracotta: #D48C6B;
+  --color-warm-white: #1E2D38;
+  --color-soft-sage: #1A3026;
+  --color-pale-apricot: #342820;
+  --color-light-orange: #2C221C;
+  --color-pale-green: #244C3B;
+  --color-muted-olive: #6C8275;
+  --color-soft-sand: #263743;
+  --color-sand-border: #354651;
+
+  /* Semantic Dark Theme Tokens */
+  --bg-app: #101820;
+  --bg-surface: #18242E;
+  --bg-surface-secondary: #1E2D38;
+  --bg-surface-elevated: #263743;
+  --text-primary: #F4F6F8;
+  --text-secondary: #D4DFE6;
+  --text-muted: #AAB8C2;
+  --border-subtle: #2B3D4A;
+  --border-strong: #354651;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #F7F1E8;
+  color: #2D221C;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+.dark body,
+html.dark body {
+  background-color: #101820;
+  color: #F4F6F8;
+}
+
+/* Custom focus ring in Burnt Terracotta for strong accessibility contrast on warm backgrounds */
+:focus-visible {
+  outline: 3px solid #713F2B !important;
+  outline-offset: 2px !important;
+}
+
+.dark :focus-visible {
+  outline: 3px solid #E8874A !important;
+  outline-offset: 2px !important;
+}
+
+/* Hide scrollbar for clean horizontal mobile swipe strips */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Touch manipulation optimization */
+button, select, a, [role="button"] {
+  touch-action: manipulation;
+}
+
+/* Interactive touch / click micro-interaction utility */
+.interactive-tap {
+  transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.interactive-tap:active {
+  transform: scale(0.98);
+}
+
+/* Ensure Leaflet controls and markers render smoothly */
+.leaflet-container {
+  font-family: inherit;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  background: #E8D2B4 !important;
+}
+
+.dark .leaflet-container {
+  background: #18242E !important;
+}
+
+/* Ensure Leaflet image overlays and tiles are never squashed by Tailwind preflight */
+.leaflet-container img.leaflet-image-layer,
+.leaflet-container .leaflet-overlay-pane img {
+  max-width: none !important;
+  max-height: none !important;
+  display: block !important;
+}
+
+.dust-risk-raster-overlay,
+.rainfall-raster-overlay,
+.temperature-raster-overlay,
+.air-quality-raster-overlay,
+.aerosol-raster-overlay {
+  pointer-events: none;
+  filter: contrast(1.05) saturate(1.15);
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Custom Leaflet markers with smooth hover and scaling */
+.custom-city-marker,
+.rainfall-grid-marker {
+  background: transparent !important;
+  border: none !important;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+.custom-city-marker:hover {
+  z-index: 1500 !important;
+}
+
+/* Refined Leaflet popups and tooltips matching DustWatch design */
+.leaflet-popup-content-wrapper {
+  background: #FFFFFF !important;
+  border: 1px solid #CBD5CD !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 4px 16px -2px rgba(36, 76, 59, 0.12), 0 2px 6px -1px rgba(0, 0, 0, 0.05) !important;
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+.dark .leaflet-popup-content-wrapper {
+  background: #1E2D38 !important;
+  border: 1px solid #354651 !important;
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.45) !important;
+}
+
+.leaflet-popup-tip {
+  background: #FFFFFF !important;
+  border: 1px solid #CBD5CD !important;
+}
+
+.dark .leaflet-popup-tip {
+  background: #1E2D38 !important;
+  border: 1px solid #354651 !important;
+}
+
+.leaflet-popup-content {
+  margin: 0.65rem 0.9rem !important;
+  font-family: inherit !important;
+  color: #1E2522 !important;
+  line-height: 1.4 !important;
+}
+
+.dark .leaflet-popup-content {
+  color: #F4F6F8 !important;
+}
+
+.dark .leaflet-bar a {
+  background-color: #1E2D38 !important;
+  color: #F4F6F8 !important;
+  border-bottom: 1px solid #354651 !important;
+}
+
+.dark .leaflet-bar a:hover {
+  background-color: #263743 !important;
+  color: #FFFFFF !important;
+}
+
+.dark .leaflet-control-attribution {
+  background: rgba(24, 36, 46, 0.85) !important;
+  color: #AAB8C2 !important;
+}
+
+.dark .leaflet-control-attribution a {
+  color: #E8874A !important;
+}
+
+/* Respect user preferences for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .interactive-tap:active {
+    transform: none !important;
+  }
+}
+
+/* Comprehensive Print Stylesheet: Formatted, High-Contrast A4 Report Output */
+@media screen {
+  .school-printable-document {
+    display: none !important;
+  }
+}
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 10mm 12mm;
+  }
+
+  html,
+  body {
+    background: #FFFFFF !important;
+    background-color: #FFFFFF !important;
+    color: #0F172A !important;
+    font-size: 10pt !important;
+    line-height: 1.35 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Force light theme in print mode regardless of user dark mode setting */
+  .dark,
+  html.dark,
+  body.dark,
+  [data-theme='dark'] {
+    color-scheme: light !important;
+    background: #FFFFFF !important;
+    background-color: #FFFFFF !important;
+    color: #0F172A !important;
+  }
+
+  /* Reset application shell layout wrappers to allow natural multi-page pagination without clipping */
+  #root,
+  .min-h-screen,
+  main,
+  [class*="overflow-"]:not(#school-printable-report):not(#school-printable-report *) {
+    display: block !important;
+    overflow: visible !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    max-width: 100% !important;
+    border: none !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    transform: none !important;
+    filter: none !important;
+  }
+
+  /* Prevent CSS transform clipping from animations / motion.div on multi-page printouts */
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Hide navigation, sidebars, headers, footers, buttons, selects, inputs, and interactive dialogs */
+  nav,
+  aside,
+  header:not(#school-printable-report *),
+  footer:not(#school-printable-report *),
+  button:not(#school-printable-report *),
+  select:not(#school-printable-report *),
+  input:not(#school-printable-report *),
+  [role="dialog"]:not(#school-printable-report *),
+  .print\:hidden,
+  .screen-only-ui {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  /* Force display of the printable school report document and preserve internal cards and styles */
+  .school-printable-document,
+  #school-printable-report {
+    display: block !important;
+    visibility: visible !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 210mm !important;
+    background: #FFFFFF !important;
+    color: #0F172A !important;
+  }
+
+  #school-printable-report * {
+    visibility: visible !important;
+  }
+
+  /* Preserve internal flex and grid structures within the report */
+  #school-printable-report .flex {
+    display: flex !important;
+  }
+
+  #school-printable-report .grid {
+    display: grid !important;
+  }
+
+  /* Multi-page pagination rules: allow long tables to split cleanly while keeping rows and cards intact */
+  table {
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+  }
+
+  tr {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  thead {
+    display: table-header-group !important;
+    break-after: avoid !important;
+  }
+
+  .print-avoid-break,
+  .p-4.rounded-lg.border {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Clean up box shadows for crisp paper printing */
+  .shadow-xs,
+  .shadow-sm,
+  .shadow-md,
+  .shadow-lg,
+  .shadow-xl {
+    box-shadow: none !important;
+  }
+}
+
+
